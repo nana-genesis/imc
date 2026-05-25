@@ -1,0 +1,156 @@
+import React, { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [altura, setAltura] = useState('');
+  const [peso, setPeso] = useState('');
+  const [imc, setImc] = useState(null);
+  const [classificacao, setClassificacao] = useState('');
+  const [erro, setErro] = useState('');
+
+  const calcularIMC = (e) => {
+    e.preventDefault();
+
+    if (!altura || !peso) {
+      setErro('Por favor, preencha todos os campos');
+      return;
+    }
+
+    // Aceita vírgula decimal e pontos
+    const alturaMetros = parseFloat(String(altura).replace(',', '.'));
+    const pesoKg = parseFloat(String(peso).replace(',', '.'));
+
+    if (!Number.isFinite(alturaMetros) || !Number.isFinite(pesoKg) || alturaMetros <= 0 || pesoKg <= 0) {
+      setErro('Informe valores válidos maiores que zero para altura e peso');
+      return;
+    }
+
+    const imcCalculado = pesoKg / (alturaMetros * alturaMetros);
+    const imcFormatado = imcCalculado.toFixed(2);
+    setImc(imcFormatado);
+    setErro('');
+
+    // Classificação do IMC
+    if (imcCalculado < 18.5) {
+      setClassificacao('Abaixo do peso');
+    } else if (imcCalculado < 25) {
+      setClassificacao('Peso normal');
+    } else if (imcCalculado < 30) {
+      setClassificacao('Sobrepeso');
+    } else if (imcCalculado < 35) {
+      setClassificacao('Obesidade grau I');
+    } else if (imcCalculado < 40) {
+      setClassificacao('Obesidade grau II');
+    } else {
+      setClassificacao('Obesidade grau III');
+    }
+  };
+
+  const limparCampos = () => {
+    setAltura('');
+    setPeso('');
+    setImc(null);
+    setClassificacao('');
+    setErro('');
+  };
+
+  return (
+    <div className="App">
+      <div className="container">
+        <h1>Calculadora de IMC</h1>
+        
+        {erro && (
+          <div role="alert" className="form-error" aria-live="assertive">
+            {erro}
+          </div>
+        )}
+
+        <form onSubmit={calcularIMC} aria-describedby={erro ? 'form-error' : undefined}>
+          <div className="form-group">
+            <label htmlFor="altura">Altura (m):</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              id="altura"
+              value={altura}
+              onChange={(e) => setAltura(e.target.value)}
+              placeholder="Ex: 1.75"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="peso">Peso (kg):</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              id="peso"
+              value={peso}
+              onChange={(e) => setPeso(e.target.value)}
+              placeholder="Ex: 70.5"
+              required
+            />
+          </div>
+
+          <div className="button-group">
+            <button type="submit" className="btn-calcular">
+              Calcular IMC
+            </button>
+            <button type="button" className="btn-limpar" onClick={limparCampos}>
+              Limpar
+            </button>
+          </div>
+        </form>
+
+        {imc !== null && (
+          <div className="resultado" role="status" aria-live="polite">
+            <h2>Resultado:</h2>
+            <p className="imc-valor">IMC: <span>{imc}</span></p>
+            <p className="imc-classificacao">Classificação: <span>{classificacao}</span></p>
+          </div>
+        )}
+
+        <div className="tabela-referencia">
+          <h3>Tabela de Referência IMC</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>IMC</th>
+                <th>Classificação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Abaixo de 18,5</td>
+                <td>Abaixo do peso</td>
+              </tr>
+              <tr>
+                <td>18,5 - 24,9</td>
+                <td>Peso normal</td>
+              </tr>
+              <tr>
+                <td>25,0 - 29,9</td>
+                <td>Sobrepeso</td>
+              </tr>
+              <tr>
+                <td>30,0 - 34,9</td>
+                <td>Obesidade grau I</td>
+              </tr>
+              <tr>
+                <td>35,0 - 39,9</td>
+                <td>Obesidade grau II</td>
+              </tr>
+              <tr>
+                <td>Acima de 40,0</td>
+                <td>Obesidade grau III</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export default App;
