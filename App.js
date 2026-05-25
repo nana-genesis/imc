@@ -9,18 +9,25 @@ function App() {
 
   const calcularIMC = (e) => {
     e.preventDefault();
-    
+
     if (!altura || !peso) {
       alert('Por favor, preencha todos os campos');
       return;
     }
 
-    const alturaMetros = parseFloat(altura);
-    const pesoKg = parseFloat(peso);
-    
+    // Aceita vírgula decimal e pontos
+    const alturaMetros = parseFloat(String(altura).replace(',', '.'));
+    const pesoKg = parseFloat(String(peso).replace(',', '.'));
+
+    if (!Number.isFinite(alturaMetros) || !Number.isFinite(pesoKg) || alturaMetros <= 0 || pesoKg <= 0) {
+      alert('Informe valores válidos maiores que zero para altura e peso');
+      return;
+    }
+
     const imcCalculado = pesoKg / (alturaMetros * alturaMetros);
-    setImc(imcCalculado.toFixed(2));
-    
+    const imcFormatado = Number(imcCalculado.toFixed(2));
+    setImc(imcFormatado);
+
     // Classificação do IMC
     if (imcCalculado < 18.5) {
       setClassificacao('Abaixo do peso');
@@ -56,7 +63,7 @@ function App() {
               type="number"
               id="altura"
               step="0.01"
-              min="0"
+              min="0.01"
               value={altura}
               onChange={(e) => setAltura(e.target.value)}
               placeholder="Ex: 1.75"
@@ -70,7 +77,7 @@ function App() {
               type="number"
               id="peso"
               step="0.1"
-              min="0"
+              min="0.1"
               value={peso}
               onChange={(e) => setPeso(e.target.value)}
               placeholder="Ex: 70.5"
