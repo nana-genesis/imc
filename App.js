@@ -6,12 +6,13 @@ function App() {
   const [peso, setPeso] = useState('');
   const [imc, setImc] = useState(null);
   const [classificacao, setClassificacao] = useState('');
+  const [erro, setErro] = useState('');
 
   const calcularIMC = (e) => {
     e.preventDefault();
 
     if (!altura || !peso) {
-      alert('Por favor, preencha todos os campos');
+      setErro('Por favor, preencha todos os campos');
       return;
     }
 
@@ -20,13 +21,14 @@ function App() {
     const pesoKg = parseFloat(String(peso).replace(',', '.'));
 
     if (!Number.isFinite(alturaMetros) || !Number.isFinite(pesoKg) || alturaMetros <= 0 || pesoKg <= 0) {
-      alert('Informe valores válidos maiores que zero para altura e peso');
+      setErro('Informe valores válidos maiores que zero para altura e peso');
       return;
     }
 
     const imcCalculado = pesoKg / (alturaMetros * alturaMetros);
-    const imcFormatado = Number(imcCalculado.toFixed(2));
+    const imcFormatado = imcCalculado.toFixed(2);
     setImc(imcFormatado);
+    setErro('');
 
     // Classificação do IMC
     if (imcCalculado < 18.5) {
@@ -56,14 +58,19 @@ function App() {
       <div className="container">
         <h1>Calculadora de IMC</h1>
         
-        <form onSubmit={calcularIMC}>
+        {erro && (
+          <div role="alert" className="form-error" aria-live="assertive">
+            {erro}
+          </div>
+        )}
+
+        <form onSubmit={calcularIMC} aria-describedby={erro ? 'form-error' : undefined}>
           <div className="form-group">
             <label htmlFor="altura">Altura (m):</label>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               id="altura"
-              step="0.01"
-              min="0.01"
               value={altura}
               onChange={(e) => setAltura(e.target.value)}
               placeholder="Ex: 1.75"
@@ -74,10 +81,9 @@ function App() {
           <div className="form-group">
             <label htmlFor="peso">Peso (kg):</label>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               id="peso"
-              step="0.1"
-              min="0.1"
               value={peso}
               onChange={(e) => setPeso(e.target.value)}
               placeholder="Ex: 70.5"
@@ -95,8 +101,8 @@ function App() {
           </div>
         </form>
 
-        {imc && (
-          <div className="resultado">
+        {imc !== null && (
+          <div className="resultado" role="status" aria-live="polite">
             <h2>Resultado:</h2>
             <p className="imc-valor">IMC: <span>{imc}</span></p>
             <p className="imc-classificacao">Classificação: <span>{classificacao}</span></p>
