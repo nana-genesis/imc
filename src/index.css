@@ -1,0 +1,11 @@
+/* Basic reset/styles for the app */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.App {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}

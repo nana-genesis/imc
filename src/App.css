@@ -1,0 +1,2 @@
+/* Keep most styles in root App.css but include minimal overrides here for tests */
+@import url('../App.css');
